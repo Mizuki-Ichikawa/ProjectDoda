@@ -1,5 +1,6 @@
 package com.example.projectdodasql;
 
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
     private Database dbHelper; // DatabaseHelperのインスタンス
     private EditText messageInput; // メッセージ入力フィールド
     private Button sendButton; // 送信ボタン
+    private Button boardButton; // Board画面へのボタン
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
         // UI コンポーネントの取得
         messageInput = findViewById(R.id.writeMsg);
         sendButton = findViewById(R.id.sendButton);
+        boardButton = findViewById(R.id.boardButton); // Boardボタンを取得
 
         // sendButton が押された時の処理
         sendButton.setOnClickListener(view -> {
@@ -44,6 +47,12 @@ public class MainActivity extends AppCompatActivity {
                 // 入力フィールドをクリア
                 messageInput.setText("");
             }
+        });
+
+        // boardButton が押された時の処理
+        boardButton.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, BoardActivity.class);
+            startActivity(intent);
         });
     }
 
