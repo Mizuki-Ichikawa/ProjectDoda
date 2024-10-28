@@ -1,0 +1,108 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <!-- 既存のボタンやListViewなど -->
+
+    <!-- Wifi Onボタン -->
+    <Button
+        android:id="@+id/onOff"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="-5dp"
+        android:layout_marginTop="130dp"
+        android:text="Wifi On" />
+
+    <!-- Discoverボタン -->
+    <Button
+        android:id="@+id/discover"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/onOff"
+        android:layout_alignBottom="@+id/onOff"
+        android:layout_centerHorizontal="true"
+        android:text="discover" />
+
+    <!-- 接続状況表示 -->
+    <TextView
+        android:id="@+id/connectionStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="82dp"
+        android:text="Connection Status"
+        android:textAlignment="center"
+        android:textColor="@android:color/holo_blue_dark"
+        android:textSize="18sp"
+        android:textStyle="italic" />
+
+    <!-- Peer ListView -->
+    <ListView
+        android:id="@+id/peerListView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_below="@+id/onOff"
+        android:background="@android:color/holo_orange_light" />
+
+    <!-- 新しく追加する掲示板用ListView -->
+    <ListView
+        android:id="@+id/messageBoardListView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_below="@+id/peerListView"
+        android:layout_marginTop="20dp"
+        android:background="@android:color/holo_green_light"
+        android:dividerHeight="8dp"
+        tools:listitem="@android:layout/simple_list_item_1" />
+
+    <!-- メッセージを表示するTextView -->
+    <TextView
+        android:id="@+id/readMsg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/messageBoardListView"
+        android:layout_marginTop="20dp"
+        android:text="Message"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        android:textStyle="italic" />
+
+    <!-- メッセージ入力 -->
+    <EditText
+        android:id="@+id/writeMsg"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="3dp"
+        android:layout_toStartOf="@+id/sendButton"
+        android:layout_weight="1"
+        android:hint="Enter message"
+        android:inputType="textPersonName" />
+
+    <!-- 送信ボタン -->
+    <Button
+        android:id="@+id/sendButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:text="Send" />
+
+    <!--データベースに存在するデータを見れる掲示板に移動するボタン-->
+    <Button
+        android:id="@+id/boardButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/discover"
+        android:layout_marginStart="58dp"
+        android:layout_marginBottom="-1dp"
+        android:layout_toEndOf="@id/discover"
+        android:text="Board" />
+</RelativeLayout>
