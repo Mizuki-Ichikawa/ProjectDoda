@@ -3,7 +3,11 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.content.ContentValues;
-import android.database.sqlite.SQLiteDatabase;
+import java.util.List;
+import java.util.ArrayList;
+import android.database.Cursor;
+
+
 
 public class Database extends SQLiteOpenHelper{
 
@@ -56,4 +60,23 @@ public class Database extends SQLiteOpenHelper{
         db.insert(TABLE_MESSAGES, null, values);
         db.close();  // データベースを閉じる
     }
+
+    // tuika
+    public List<String> getAllMessages() {
+        List<String> messages = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selectQuery = "SELECT message FROM board";
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                messages.add(cursor.getString(cursor.getColumnIndexOrThrow("message")));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+
+        return messages;
+    }
+
 }
