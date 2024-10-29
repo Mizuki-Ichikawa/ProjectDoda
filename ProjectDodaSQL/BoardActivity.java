@@ -1,5 +1,5 @@
 // Boardページに関するクラス
-package com.example.projectdodasql;
+package ProjectDodaSQL;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;

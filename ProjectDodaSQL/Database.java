@@ -1,4 +1,4 @@
-package com.example.projectdodasql;
+package ProjectDodaSQL;
 
 import android.content.ContentValues;
 import android.content.Context;

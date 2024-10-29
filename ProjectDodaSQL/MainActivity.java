@@ -1,4 +1,4 @@
-package com.example.projectdodasql;
+package ProjectDodaSQL;
 
 import android.content.Intent;
 import android.os.Bundle;
