@@ -16,7 +16,7 @@ import java.util.Locale;
 public class Database extends SQLiteOpenHelper{
 
     private static final String DATABASE_NAME = "messageDB"; // データベースの名前
-    private static final int DATABASE_VERSION = 1; // データベースのバージョン
+    private static final int DATABASE_VERSION = 2; // データベースのバージョン
 
     // テーブル情報の定義
     public static final String TABLE_MESSAGES = "board"; // テーブル名
@@ -47,7 +47,7 @@ public class Database extends SQLiteOpenHelper{
         db.execSQL(CREATE_TABLE_MESSAGES); // テーブル作成
     }
 
-     // データベースのバージョン更新メソッド
+    // データベースのバージョン更新メソッド
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_MESSAGES);
@@ -94,5 +94,3 @@ public class Database extends SQLiteOpenHelper{
         return messages;
     }
 }
-
-
