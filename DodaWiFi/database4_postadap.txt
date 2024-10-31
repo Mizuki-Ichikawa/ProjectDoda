@@ -1,4 +1,5 @@
-// 重複解決案　-乱数発生ver３- PostAdapter.java部分
+// 重複解決案　-乱数発生ver4- PostAdapter.java部分　再掲
+
 package com.example.ddwifi4;
 
 import android.app.AlertDialog;

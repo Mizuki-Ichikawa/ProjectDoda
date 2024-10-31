@@ -1,4 +1,4 @@
-// 重複解決案　-乱数発生ver３- Database.java部分
+// 重複解決案　-乱数発生ver4- Database.java部分 再掲
 
 package com.example.ddwifi4;
 

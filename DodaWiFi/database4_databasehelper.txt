@@ -1,4 +1,4 @@
-// 重複解決案　-乱数発生ver３- DatabaseHelper.java部分
+// 重複解決案　-乱数発生ver4- DatabaseHelper.java部分　再掲
 
 package com.example.ddwifi4;
 
@@ -72,7 +72,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return jsonArray.toString();
     }
 
-    public void addPost(String content, String messageId, long expiryTimestamp, double latitude, double longitude) {
+    public void addPost(String messageId, String content, long expiryTimestamp, double latitude, double longitude) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -160,7 +160,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             JSONArray jsonArray = new JSONArray(jsonData);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                String messageId = jsonObject.getString("message_id");  // 新しい message_id を文字列で取得
+                String messageId = jsonObject.getString("message_id");  // 新しい message_id を取得
                 String content = jsonObject.getString("content");
                 long expiryTimestamp = jsonObject.getLong("expiryTimestamp");
                 double latitude = jsonObject.getDouble("latitude");
@@ -172,6 +172,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             e.printStackTrace();
         }
     }
+
 
 
 
