@@ -17,7 +17,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "bulletin_board.db";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
     public static final String TABLE_NAME = "posts";
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_CONTENT = "content";
