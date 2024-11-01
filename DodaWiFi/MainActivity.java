@@ -442,8 +442,9 @@ public class MainActivity extends AppCompatActivity {
                     JSONArray jsonArray = new JSONArray(data);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        dbHelper.addPost(
+                        dbHelper.addPostIfNotDuplicate(
                                 jsonObject.getString("content"),
+                                jsonObject.getString("timestamp"),
                                 jsonObject.getLong("expiryTimestamp"),
                                 jsonObject.getDouble("latitude"),
                                 jsonObject.getDouble("longitude")
@@ -457,6 +458,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+
 
         public void write(byte[] bytes) {
             try {
@@ -541,12 +543,12 @@ public class MainActivity extends AppCompatActivity {
             for (Post post : posts) {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("content", post.getContent());
+                jsonObject.put("timestamp", post.getTimestamp()); // timestampを追加
                 jsonObject.put("expiryTimestamp", post.getExpiryTimestamp());
                 jsonObject.put("latitude", post.getLatitude());
                 jsonObject.put("longitude", post.getLongitude());
                 jsonArray.put(jsonObject);
             }
-            // デバッグ用ログ出力
             Log.d("sendDatabase", "Sending JSON data: " + jsonArray.toString());
 
             if (sendReceive != null) {
@@ -559,6 +561,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
 
 
 
