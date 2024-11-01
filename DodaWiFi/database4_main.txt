@@ -49,8 +49,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.widget.ArrayAdapter;
-
 public class MainActivity extends AppCompatActivity {
 
     Button btnOnOff, btnDiscover, btnStopDiscover;
@@ -80,8 +78,6 @@ public class MainActivity extends AppCompatActivity {
     Button btnOpenDatabase;
 
     private static final int AUTH_CODE = 12345; // 認証コード
-
-    DatabaseHelper dbHelper;  // データベースヘルパーのインスタンス
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -447,23 +443,17 @@ public class MainActivity extends AppCompatActivity {
                     JSONArray jsonArray = new JSONArray(data);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-                        // messageId を JSON から取得
-                        String messageId = jsonObject.getString("messageId");
-
-                        // 他の情報も取得
-                        String content = jsonObject.getString("content");
-                        long expiryTimestamp = jsonObject.getLong("expiryTimestamp");
-                        double latitude = jsonObject.getDouble("latitude");
-                        double longitude = jsonObject.getDouble("longitude");
-
-                        // addPost メソッドに messageId を含めた引数を渡す
-                        dbHelper.addPost(messageId, content, expiryTimestamp, latitude, longitude);
+                        dbHelper.addPostIfNotDuplicate(
+                                jsonObject.getString("content"),
+                                jsonObject.getString("timestamp"),
+                                jsonObject.getLong("expiryTimestamp"),
+                                jsonObject.getDouble("latitude"),
+                                jsonObject.getDouble("longitude")
+                        );
                     }
-
                     runOnUiThread(() -> Toast.makeText(MainActivity.this, "Database updated with received data", Toast.LENGTH_SHORT).show());
-                    sendDone();
 
+                    sendDone();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -554,12 +544,12 @@ public class MainActivity extends AppCompatActivity {
             for (Post post : posts) {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("content", post.getContent());
+                jsonObject.put("timestamp", post.getTimestamp()); // timestampを追加
                 jsonObject.put("expiryTimestamp", post.getExpiryTimestamp());
                 jsonObject.put("latitude", post.getLatitude());
                 jsonObject.put("longitude", post.getLongitude());
                 jsonArray.put(jsonObject);
             }
-            // デバッグ用ログ出力
             Log.d("sendDatabase", "Sending JSON data: " + jsonArray.toString());
 
             if (sendReceive != null) {
@@ -572,6 +562,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
 
 
 
@@ -594,6 +585,4 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-
 }

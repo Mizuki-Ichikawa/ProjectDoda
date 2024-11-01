@@ -1,19 +1,17 @@
-// 重複解決案　-乱数発生ver4.3- Post.java部分　
+// 重複解決案　-乱数発生ver4.4- Post.java部分　
 
 package com.example.ddwifi4;
 
 public class Post {
     private int id;
-    private String messageId; // メッセージIDフィールドの追加
     private String content;
     private String timestamp;
     private long expiryTimestamp;
     private double latitude;
     private double longitude;
 
-    public Post(int id, String messageId, String content, String timestamp, long expiryTimestamp, double latitude, double longitude) {
+    public Post(int id, String content, String timestamp, long expiryTimestamp, double latitude, double longitude) {
         this.id = id;
-        this.messageId = messageId; // コンストラクタに追加
         this.content = content;
         this.timestamp = timestamp;
         this.expiryTimestamp = expiryTimestamp;
@@ -23,10 +21,6 @@ public class Post {
 
     public int getId() {
         return id;
-    }
-
-    public String getMessageId() { // getMessageIdメソッドの追加
-        return messageId;
     }
 
     public String getContent() {

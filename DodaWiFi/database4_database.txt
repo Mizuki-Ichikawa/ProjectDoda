@@ -1,4 +1,4 @@
-// 重複解決案　-乱数発生ver4.3- Database.java部分　
+// 重複解決案　-乱数発生ver4.4- Database.java部分　
 package com.example.ddwifi4;
 
 import android.Manifest;
@@ -66,18 +66,10 @@ public class Database extends AppCompatActivity {
 
         dbHelper = new DatabaseHelper(this);
         postList = dbHelper.getAllPosts();
-        // postListが空の場合はメッセージを表示してアダプター設定をスキップ
-        if (postList.isEmpty()) {
-            Toast.makeText(this, "データベースが空です。表示する投稿がありません。", Toast.LENGTH_SHORT).show();
-            //return; // アダプター設定をスキップ
-        }
         filteredList = new ArrayList<>(postList);
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        //adapter = new PostAdapter(this, filteredList, myLatitude, myLongitude);
-        setupAdapter();
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         requestLocationPermission();
@@ -261,24 +253,13 @@ public class Database extends AppCompatActivity {
         try {
             fusedLocationClient.getLastLocation()
                     .addOnSuccessListener(this, location -> {
-                        if (adapter != null) {
-                            adapter.notifyItemInserted(0);
-                            recyclerView.scrollToPosition(0);
-                        } else {
-                            Toast.makeText(this, "Adapterが初期化されていません", Toast.LENGTH_SHORT).show();
-                        }
-
                         if (location != null) {
                             double latitude = location.getLatitude();
                             double longitude = location.getLongitude();
 
-                            // messageIdをUUIDとして生成
-                            String messageId = java.util.UUID.randomUUID().toString();
+                            // 重複確認を行いながら投稿を追加
+                            dbHelper.addPostIfNotDuplicate(content, Long.toString(expiryTimestamp), expiryTimestamp, latitude, longitude);
 
-                            // 新しい引数形式でaddPostを呼び出す
-                            dbHelper.addPost(messageId, content, expiryTimestamp, latitude, longitude);
-
-                            // 最新の投稿を取得し、リストに追加
                             Post newPost = dbHelper.getLatestPost();
                             postList.add(0, newPost);
                             filteredList.add(0, newPost);
@@ -322,18 +303,9 @@ public class Database extends AppCompatActivity {
     }
 
     private void setupAdapter() {
-
-        if (adapter == null) { // Adapterがまだ設定されていない場合
-             adapter = new PostAdapter(this, filteredList, myLatitude, myLongitude);
-             recyclerView.setAdapter(adapter);
-        }
-
-        if (!filteredList.isEmpty()) {
-            adapter.notifyDataSetChanged();
-        }
-
+        adapter = new PostAdapter(this, filteredList, myLatitude, myLongitude);
+        recyclerView.setAdapter(adapter);
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

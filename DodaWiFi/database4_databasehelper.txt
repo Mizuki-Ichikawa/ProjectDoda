@@ -1,4 +1,4 @@
-// 重複解決案　-乱数発生ver4.3- DatabaseHelper.java部分
+// 重複解決案　-乱数発生ver4.4- DatabaseHelper.java部分
 package com.example.ddwifi4;
 
 import android.content.Context;
@@ -30,18 +30,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-    public static final String COLUMN_MESSAGE_ID = "message_id";  // 新しい識別子のカラム
-
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " ("
                 + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + COLUMN_MESSAGE_ID + " TEXT UNIQUE, "  // 新しいメッセージ識別子
                 + COLUMN_CONTENT + " TEXT NOT NULL, "
                 + COLUMN_TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
                 + COLUMN_EXPIRY_TIMESTAMP + " INTEGER, "
-                + COLUMN_LATITUDE + " REAL DEfAULT 999.999, "
-                + COLUMN_LONGITUDE + " REAL DEFAULT 999.999" + ");";
+                + COLUMN_LATITUDE + " REAL, "
+                + COLUMN_LONGITUDE + " REAL" + ");";
         db.execSQL(CREATE_TABLE);
     }
 
@@ -71,29 +68,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return jsonArray.toString();
     }
 
-    public void addPost(String messageId, String content, long expiryTimestamp, double latitude, double longitude) {
+    // 投稿を追加し、掲載期限と位置情報を設定
+    public void addPost(String content, long expiryTimestamp, double latitude, double longitude) {
         SQLiteDatabase db = this.getWritableDatabase();
-
         ContentValues values = new ContentValues();
-        values.put(COLUMN_MESSAGE_ID, messageId); // メッセージIDを設定
         values.put(COLUMN_CONTENT, content);
         values.put(COLUMN_EXPIRY_TIMESTAMP, expiryTimestamp);
         values.put(COLUMN_LATITUDE, latitude);
         values.put(COLUMN_LONGITUDE, longitude);
-
-        // 重複をチェック
-        Cursor cursor = db.query(TABLE_NAME, new String[]{COLUMN_MESSAGE_ID},
-                COLUMN_MESSAGE_ID + " = ?", new String[]{messageId},
-                null, null, null);
-
-        if (cursor.getCount() == 0) {  // 重複なしの場合のみ挿入
-            db.insert(TABLE_NAME, null, values);
-        }
-        cursor.close();
+        db.insert(TABLE_NAME, null, values);
         db.close();
     }
-
-
 
     // 投稿を削除
     public void deletePost(int id) {
@@ -108,7 +93,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long currentTime = System.currentTimeMillis();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_NAME,
-                new String[]{COLUMN_ID, COLUMN_MESSAGE_ID, COLUMN_CONTENT, COLUMN_TIMESTAMP, COLUMN_EXPIRY_TIMESTAMP, COLUMN_LATITUDE, COLUMN_LONGITUDE},
+                new String[]{COLUMN_ID, COLUMN_CONTENT, COLUMN_TIMESTAMP, COLUMN_EXPIRY_TIMESTAMP, COLUMN_LATITUDE, COLUMN_LONGITUDE},
                 COLUMN_EXPIRY_TIMESTAMP + " > ? OR " + COLUMN_EXPIRY_TIMESTAMP + " IS NULL",
                 new String[]{String.valueOf(currentTime)},
                 null, null, COLUMN_ID + " DESC");
@@ -116,13 +101,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID));
-                String messageId = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_MESSAGE_ID));
                 String content = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CONTENT));
                 String timestamp = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TIMESTAMP));
                 long expiryTimestamp = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_EXPIRY_TIMESTAMP));
                 double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LATITUDE));
                 double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LONGITUDE));
-                posts.add(new Post(id, messageId, content, timestamp, expiryTimestamp, latitude, longitude));
+                posts.add(new Post(id, content, timestamp, expiryTimestamp, latitude, longitude));
             } while (cursor.moveToNext());
             cursor.close();
         }
@@ -134,19 +118,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Post getLatestPost() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_NAME,
-                new String[]{COLUMN_ID, COLUMN_MESSAGE_ID, COLUMN_CONTENT, COLUMN_TIMESTAMP, COLUMN_EXPIRY_TIMESTAMP, COLUMN_LATITUDE, COLUMN_LONGITUDE},
+                new String[]{COLUMN_ID, COLUMN_CONTENT, COLUMN_TIMESTAMP, COLUMN_EXPIRY_TIMESTAMP, COLUMN_LATITUDE, COLUMN_LONGITUDE},
                 null, null, null, null, COLUMN_ID + " DESC", "1");
 
         Post post = null;
         if (cursor != null && cursor.moveToFirst()) {
             int id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID));
-            String messageId = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_MESSAGE_ID));
             String content = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CONTENT));
             String timestamp = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TIMESTAMP));
             long expiryTimestamp = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_EXPIRY_TIMESTAMP));
             double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LATITUDE));
             double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LONGITUDE));
-            post = new Post(id, messageId, content, timestamp, expiryTimestamp, latitude, longitude);
+            post = new Post(id, content, timestamp, expiryTimestamp, latitude, longitude);
             cursor.close();
         }
         db.close();
@@ -159,20 +142,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             JSONArray jsonArray = new JSONArray(jsonData);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                String messageId = jsonObject.getString("message_id");  // 新しい message_id を取得
                 String content = jsonObject.getString("content");
                 long expiryTimestamp = jsonObject.getLong("expiryTimestamp");
                 double latitude = jsonObject.getDouble("latitude");
                 double longitude = jsonObject.getDouble("longitude");
-
-                addPost(messageId, content, expiryTimestamp, latitude, longitude);  // messageId を追加
+                addPost(content, expiryTimestamp, latitude, longitude);
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
+    // DatabaseHelper.java
 
+    public boolean isDuplicatePost(String timestamp, double latitude, double longitude) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_NAME, new String[]{COLUMN_ID},
+                COLUMN_TIMESTAMP + " = ? AND " + COLUMN_LATITUDE + " = ? AND " + COLUMN_LONGITUDE + " = ?",
+                new String[]{timestamp, String.valueOf(latitude), String.valueOf(longitude)},
+                null, null, null);
 
+        boolean exists = cursor.getCount() > 0; // 同じ投稿が存在するかを確認
+        cursor.close();
+        db.close();
+        return exists;
+    }
 
+    public void addPostIfNotDuplicate(String content, String timestamp, long expiryTimestamp, double latitude, double longitude) {
+        if (!isDuplicatePost(timestamp, latitude, longitude)) { // 重複していない場合のみ追加
+            addPost(content, expiryTimestamp, latitude, longitude);
+        }
+    }
 }

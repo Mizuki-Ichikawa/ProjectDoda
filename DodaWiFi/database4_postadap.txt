@@ -1,4 +1,4 @@
-// 重複解決案　-乱数発生ver4.3- PostAdapter.java部分　
+// 重複解決案　-乱数発生ver4.4- PostAdapter.java部分　
 
 package com.example.ddwifi4;
 
@@ -23,9 +23,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import java.util.Set;
-import java.util.HashSet;
-
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     private List<Post> mPosts;
@@ -33,8 +30,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     private String searchText = "";
     private double myLatitude;
     private double myLongitude;
-    private Set<String> displayedMessageIds = new HashSet<>(); // 表示済みメッセージIDのセット
-
 
     public PostAdapter(Context context, List<Post> posts, double myLatitude, double myLongitude) {
         this.mContext = context;
@@ -99,49 +94,36 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull PostAdapter.ViewHolder holder, int position) {
         Post post = mPosts.get(position);
 
-        // 表示済みのメッセージIDを確認
-        if (!displayedMessageIds.contains(post.getMessageId())) {
-            displayedMessageIds.add(post.getMessageId());
-
-            // メッセージ内容の表示処理
-            SpannableString spannableContent = new SpannableString(post.getContent());
-            int startIndex = post.getContent().toLowerCase().indexOf(searchText);
-            if (startIndex != -1 && !searchText.isEmpty()) {
-                int endIndex = startIndex + searchText.length();
-                spannableContent.setSpan(new ForegroundColorSpan(Color.RED), startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
-            holder.contentTextView.setText(spannableContent);
-
-            // 投稿日時の表示
-            try {
-                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                inputFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-                Date parsedDate = inputFormat.parse(post.getTimestamp());
-                SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.JAPAN);
-                outputFormat.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
-                holder.timestampTextView.setText("投稿日時: " + outputFormat.format(parsedDate));
-            } catch (Exception e) {
-                holder.timestampTextView.setText("日時取得エラー");
-            }
-
-            // 有効期限の表示
-            SimpleDateFormat expiryFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.JAPAN);
-            expiryFormat.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
-            holder.expiryTextView.setText("有効期限: " + expiryFormat.format(new Date(post.getExpiryTimestamp())));
-
-            // 距離と方向の計算と表示
-            String distanceAndDirection = getDistanceAndDirection(myLatitude, myLongitude, post.getLatitude(), post.getLongitude());
-            holder.locationTextView.setText(distanceAndDirection);
-
-            // locationTextViewにクリックリスナーを設定してダイアログを表示
-            holder.locationTextView.setOnClickListener(v -> showLocationDialog(post.getLatitude(), post.getLongitude()));
-        } else {
-            // 表示済みメッセージは削除
-            holder.itemView.setVisibility(View.GONE);
-            holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
+        SpannableString spannableContent = new SpannableString(post.getContent());
+        int startIndex = post.getContent().toLowerCase().indexOf(searchText);
+        if (startIndex != -1 && !searchText.isEmpty()) {
+            int endIndex = startIndex + searchText.length();
+            spannableContent.setSpan(new ForegroundColorSpan(Color.RED), startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
-    }
+        holder.contentTextView.setText(spannableContent);
 
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            inputFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date parsedDate = inputFormat.parse(post.getTimestamp());
+            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.JAPAN);
+            outputFormat.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
+            holder.timestampTextView.setText("投稿日時: " + outputFormat.format(parsedDate));
+        } catch (Exception e) {
+            holder.timestampTextView.setText("日時取得エラー");
+        }
+
+        SimpleDateFormat expiryFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.JAPAN);
+        expiryFormat.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
+        holder.expiryTextView.setText("有効期限: " + expiryFormat.format(new Date(post.getExpiryTimestamp())));
+
+        // 距離と方向を計算して表示
+        String distanceAndDirection = getDistanceAndDirection(myLatitude, myLongitude, post.getLatitude(), post.getLongitude());
+        holder.locationTextView.setText(distanceAndDirection);
+
+        // locationTextViewにクリックリスナーを設定してダイアログを表示
+        holder.locationTextView.setOnClickListener(v -> showLocationDialog(post.getLatitude(), post.getLongitude()));
+    }
 
     @Override
     public int getItemCount() {
@@ -191,6 +173,4 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         builder.setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
         builder.create().show();
     }
-
-
 }
