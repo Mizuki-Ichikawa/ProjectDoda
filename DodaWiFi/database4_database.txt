@@ -1,5 +1,4 @@
-// 重複解決案　-乱数発生ver4- Database.java部分 再掲
-
+// 重複解決案　-乱数発生ver4.3- Database.java部分　
 package com.example.ddwifi4;
 
 import android.Manifest;
@@ -67,10 +66,18 @@ public class Database extends AppCompatActivity {
 
         dbHelper = new DatabaseHelper(this);
         postList = dbHelper.getAllPosts();
+        // postListが空の場合はメッセージを表示してアダプター設定をスキップ
+        if (postList.isEmpty()) {
+            Toast.makeText(this, "データベースが空です。表示する投稿がありません。", Toast.LENGTH_SHORT).show();
+            //return; // アダプター設定をスキップ
+        }
         filteredList = new ArrayList<>(postList);
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        //adapter = new PostAdapter(this, filteredList, myLatitude, myLongitude);
+        setupAdapter();
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         requestLocationPermission();
@@ -254,6 +261,13 @@ public class Database extends AppCompatActivity {
         try {
             fusedLocationClient.getLastLocation()
                     .addOnSuccessListener(this, location -> {
+                        if (adapter != null) {
+                            adapter.notifyItemInserted(0);
+                            recyclerView.scrollToPosition(0);
+                        } else {
+                            Toast.makeText(this, "Adapterが初期化されていません", Toast.LENGTH_SHORT).show();
+                        }
+
                         if (location != null) {
                             double latitude = location.getLatitude();
                             double longitude = location.getLongitude();
@@ -308,9 +322,18 @@ public class Database extends AppCompatActivity {
     }
 
     private void setupAdapter() {
-        adapter = new PostAdapter(this, filteredList, myLatitude, myLongitude);
-        recyclerView.setAdapter(adapter);
+
+        if (adapter == null) { // Adapterがまだ設定されていない場合
+             adapter = new PostAdapter(this, filteredList, myLatitude, myLongitude);
+             recyclerView.setAdapter(adapter);
+        }
+
+        if (!filteredList.isEmpty()) {
+            adapter.notifyDataSetChanged();
+        }
+
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

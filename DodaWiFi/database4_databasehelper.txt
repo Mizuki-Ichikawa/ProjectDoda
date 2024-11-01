@@ -1,5 +1,4 @@
-// 重複解決案　-乱数発生ver4- DatabaseHelper.java部分　再掲
-
+// 重複解決案　-乱数発生ver4.3- DatabaseHelper.java部分
 package com.example.ddwifi4;
 
 import android.content.Context;
@@ -41,8 +40,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_CONTENT + " TEXT NOT NULL, "
                 + COLUMN_TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
                 + COLUMN_EXPIRY_TIMESTAMP + " INTEGER, "
-                + COLUMN_LATITUDE + " REAL, "
-                + COLUMN_LONGITUDE + " REAL" + ");";
+                + COLUMN_LATITUDE + " REAL DEfAULT 999.999, "
+                + COLUMN_LONGITUDE + " REAL DEFAULT 999.999" + ");";
         db.execSQL(CREATE_TABLE);
     }
 

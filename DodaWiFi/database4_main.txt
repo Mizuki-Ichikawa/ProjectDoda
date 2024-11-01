@@ -1,4 +1,4 @@
-// 重複解決案　-乱数発生ver4- MainActivity.java部分　再掲
+// 重複解決案　-乱数発生ver4.3- MainActivity.java部分
 package com.example.ddwifi4;
 
 import android.Manifest;
