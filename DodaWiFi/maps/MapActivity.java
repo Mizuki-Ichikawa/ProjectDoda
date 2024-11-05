@@ -1,6 +1,8 @@
 package com.example.ddwifi4;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -11,6 +13,8 @@ import org.osmdroid.config.Configuration;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 public class MapActivity extends AppCompatActivity {
@@ -18,6 +22,7 @@ public class MapActivity extends AppCompatActivity {
     private MapView mapView;
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +54,18 @@ public class MapActivity extends AppCompatActivity {
         marker.setSubDescription("This is Tokyo.");
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         mapView.getOverlays().add(marker);
+
+        // 戻るボタンの設定
+        Button btnReturnToBoard = findViewById(R.id.btnReturnToBoard);
+        btnReturnToBoard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 掲示板のページ（Databaseアクティビティ）に戻る
+                Intent intent = new Intent(MapActivity.this, Database.class);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 
     private void requestPermissionsIfNecessary(String[] permissions) {
