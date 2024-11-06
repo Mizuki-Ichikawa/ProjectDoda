@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import org.osmdroid.config.Configuration;
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 
@@ -17,10 +18,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.List;
+
 public class MapActivity extends AppCompatActivity {
 
     private MapView mapView;
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
+    private DatabaseHelper dbHelper;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -46,6 +50,7 @@ public class MapActivity extends AppCompatActivity {
         // 地図の初期位置を設定
         mapView.getController().setZoom(15.0);
         mapView.getController().setCenter(new org.osmdroid.util.GeoPoint(35.6895, 139.6917)); // 東京の座標（例）
+        dbHelper = new DatabaseHelper(this);
 
         // ピンを立てる例
         Marker marker = new Marker(mapView);
@@ -66,6 +71,8 @@ public class MapActivity extends AppCompatActivity {
                 finish();
             }
         });
+        // 📍
+        getData();
     }
 
     private void requestPermissionsIfNecessary(String[] permissions) {
@@ -94,11 +101,37 @@ public class MapActivity extends AppCompatActivity {
         }
     }
 
+    private void getData() {
+        // データベースから投稿を取得
+        List<Post> posts = dbHelper.getAllPosts();
+
+        for (Post post : posts) {
+            double latitude = post.getLatitude();
+            double longitude = post.getLongitude();
+            String content = post.getContent();
+
+            // 緯度と経度が存在する場合、地図上にマーカーを追加
+            if (latitude != 0.0 && longitude != 0.0) {
+                Marker marker = new Marker(mapView);
+                marker.setPosition(new GeoPoint(latitude, longitude));
+                marker.setTitle(content); // マーカーのタイトルとして投稿内容を表示
+                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                mapView.getOverlays().add(marker);
+            }
+        }
+        mapView.invalidate(); // 地図を再描画
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        mapView.onResume(); // OSMDroidのライフサイクル管理
+
+        mapView.getOverlays().clear(); // 既存のオーバーレイをクリア
+        getData(); // 最新のデータでマーカーを再描画
+        mapView.invalidate(); // 再描画
     }
+
+
 
     @Override
     protected void onPause() {
