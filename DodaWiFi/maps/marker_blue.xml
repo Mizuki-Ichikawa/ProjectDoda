@@ -1,0 +1,13 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:height="24dp"
+    android:viewportHeight="24"
+    android:viewportWidth="24"
+    android:width="24dp"
+    android:tint="#0000FF"
+    tools:ignore="ExtraText"> <!-- 青色に設定（任意） -->
+
+    <path
+        android:fillColor="#0000FF"
+        android:pathData="M12 2C10.35 2 9 3.35 9 5C9 6.65 10.35 8 12 8C13.65 8 15 6.65 15 5C15 3.35 13.65 2 12 2zM12 10C9.34 10 7 12.34 7 15L7 20L17 20L17 15C17 12.34 14.66 10 12 10z" />
+</vector>
