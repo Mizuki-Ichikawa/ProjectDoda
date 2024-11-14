@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
 
     <org.osmdroid.views.MapView
         android:id="@+id/mapView"
@@ -9,12 +12,44 @@
         android:layout_height="match_parent" />
 
     <!-- 掲示板に戻るボタンを配置 -->
-    <Button
+    <ImageButton
         android:id="@+id/btnReturnToBoard"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="掲示板"
-        android:layout_alignParentBottom="true"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_database_icon"
+        android:contentDescription="掲示板"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:layout_alignParentStart="true"
-        android:layout_margin="16dp" />
+        android:layout_alignParentBottom="true"
+        android:translationX="72dp"
+        android:translationY="-0dp"
+        android:translationZ="10dp"
+        />
+
+    <!-- 地図の設定ページに遷移するボタンを配置-->
+    <ImageButton
+        android:id="@+id/btnMoveToSetting"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_settings"
+        android:contentDescription="地図設定ページへ移動する"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:translationX="300dp"
+        android:translationY="-0dp"
+        android:translationZ="10dp"
+        />
+
+    <TextView
+        android:id="@+id/footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="16sp"
+        android:gravity="center"
+        android:padding="16dp"
+        android:background="#EDE7F6"
+        android:layout_alignParentBottom="true" />
+
 </RelativeLayout>

@@ -80,6 +80,16 @@ public class MapActivity extends AppCompatActivity {
             }
         });
 
+        // 地図設定ボタンの設定
+        ImageButton btnMoveToSetting = findViewById(R.id.btnMoveToSetting);
+        btnMoveToSetting.setOnClickListener(new View.OnClickListener(){;
+            @Override
+            public void onClick(View v){
+                Intent intent = new Intent(MapActivity.this, MapSettingActivity.class);
+                startActivity(intent);
+            }
+        });
+
         // 位置情報サービスを初期化
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
