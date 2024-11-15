@@ -1,0 +1,22 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="#000000"> <!-- 黒色に設定 -->
+
+    <!-- ゴミ箱の蓋 -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M3,6h18v2H3z" />
+
+    <!-- ゴミ箱本体 -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M5,8h14v12c0,1.1 -0.9,2 -2,2H7c-1.1,0 -2,-0.9 -2,-2V8z" />
+
+    <!-- ゴミ箱の取っ手 -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M10,4h4c1.1,0 2,0.9 2,2H8c0,-1.1 0.9,-2 2,-2z" />
+</vector>
