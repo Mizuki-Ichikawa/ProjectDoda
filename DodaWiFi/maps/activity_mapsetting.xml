@@ -1,24 +1,270 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
 
-    <!-- res/layout/activity_mapsetting.xml -->
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
+    <!-- テキスト -->
+    <TextView
+        android:id="@+id/text1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="25dp"
+        android:text="・ダウンロード地図（任意）"
+        android:textSize="18sp"
+        android:textColor="#000000"
+        android:padding="16dp" />
+
+    <TextView
+        android:id="@+id/text2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="460dp"
+        android:text="・ダウンロード地図（自動）"
+        android:textSize="18sp"
+        android:textColor="#000000"
+        android:padding="16dp" />
+
+    <TextView
+        android:id="@+id/map1Byte"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="170dp"
+        android:layout_marginStart="200dp"
+        android:text="0 byte"
+        android:textSize="18sp"
+        android:textColor="#000000"
+        android:padding="16dp" />
+
+    <TextView
+        android:id="@+id/map2Byte"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="300dp"
+        android:layout_marginStart="200dp"
+        android:text="0 byte"
+        android:textSize="18sp"
+        android:textColor="#000000"
+        android:padding="16dp" />
+
+    <TextView
+        android:id="@+id/map3Byte"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="430dp"
+        android:layout_marginStart="200dp"
+        android:text="0 byte"
+        android:textSize="18sp"
+        android:textColor="#000000"
+        android:padding="16dp" />
+
+    <TextView
+        android:id="@+id/map4Byte"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="610dp"
+        android:layout_marginStart="200dp"
+        android:text="0 byte"
+        android:textSize="18sp"
+        android:textColor="#000000"
+        android:padding="16dp" />
+
+    <!-- 地図1ボタン -->
+    <Button
+        android:id="@+id/btnMap1"
+        android:layout_width="240dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/rounded_rectangle"
         android:gravity="center"
-        android:background="#FFFFFF">
+        android:text="地図1"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="設定ページ"
-            android:textSize="24sp"
-            android:textColor="#000000" />
+    <!-- 地図1追加ボタン -->
+    <ImageButton
+        android:id="@+id/btnAddMap1"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_add"
+        android:contentDescription="地図1を追加する"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="280dp"
+        android:layout_marginTop="135dp"
+        />
+
+    <!-- 地図1削除ボタン-->
+    <ImageButton
+        android:id="@+id/btnTrashMap1"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_trash"
+        android:contentDescription="地図1を削除する"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="330dp"
+        android:layout_marginTop="135dp"
+        />
+
+    <!-- 地図2ボタン -->
+    <Button
+        android:id="@+id/btnMap2"
+        android:layout_width="240dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="230dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/rounded_rectangle"
+        android:gravity="center"
+        android:text="地図2"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp" />
+
+    <!-- 地図2追加ボタン -->
+    <ImageButton
+        android:id="@+id/btnAddMap2"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_add"
+        android:contentDescription="地図2を追加する"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="280dp"
+        android:layout_marginTop="265dp"
+        />
+
+    <!-- 地図2削除ボタン-->
+    <ImageButton
+        android:id="@+id/btnTrashMap2"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_trash"
+        android:contentDescription="地図2を削除する"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="330dp"
+        android:layout_marginTop="265dp"
+        />
+
+    <!-- 地図3ボタン -->
+    <Button
+        android:id="@+id/btnMap3"
+        android:layout_width="240dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="360dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/rounded_rectangle"
+        android:gravity="center"
+        android:text="地図3"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp" />
+
+    <!-- 地図3追加ボタン -->
+    <ImageButton
+        android:id="@+id/btnAddMap3"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_add"
+        android:contentDescription="地図3を追加する"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="280dp"
+        android:layout_marginTop="395dp"
+        />
+
+    <!-- 地図3削除ボタン-->
+    <ImageButton
+        android:id="@+id/btnTrashMap3"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_trash"
+        android:contentDescription="地図3を削除する"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="330dp"
+        android:layout_marginTop="395dp"
+        />
+
+    <!-- 地図4ボタン -->
+    <Button
+        android:id="@+id/btnMap4"
+        android:layout_width="240dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="540dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/rounded_rectangle"
+        android:gravity="center"
+        android:text="地図4"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp" />
+
+
+    <!-- 下部ボタン配置エリア -->
+    <LinearLayout
+        android:id="@+id/footer_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
+        android:padding="16dp"
+        android:background="#EDE7F6">
+
+        <!-- 掲示板に戻るボタン -->
+        <ImageButton
+            android:id="@+id/btnReturnToBoard"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_database_icon"
+            android:contentDescription="掲示板ページに戻る"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
+        <!-- ホームページに戻るボタン -->
+        <ImageButton
+            android:id="@+id/btnReturnToHome"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_home"
+            android:contentDescription="ホームに戻る"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
+        <!-- マップページに戻るボタン -->
+        <ImageButton
+            android:id="@+id/btnReturnToMap"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:src="@drawable/marker_black"
+            android:contentDescription="マップページに戻る"
+            android:background="?attr/selectableItemBackgroundBorderless" />
     </LinearLayout>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>
