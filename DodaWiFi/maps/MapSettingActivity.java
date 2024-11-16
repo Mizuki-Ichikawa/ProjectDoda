@@ -53,18 +53,24 @@ public class MapSettingActivity extends AppCompatActivity {
         ImageButton btnAddMap1 = findViewById(R.id.btnAddMap1);
         btnAddMap1.setOnClickListener(v -> {
             showDownLoadChecking("地図1");
+            showByteChecking(500);
+            showOverwrapChecking("地図1");
+            showFinishAddMap("地図1");
+
         });
 
         // 地図2追加ボタン押された時
         ImageButton btnAddMap2 = findViewById(R.id.btnAddMap2);
         btnAddMap2.setOnClickListener(v -> {
-            showDownLoadChecking("地図2");
+            NotConnectedInternet("地図2");
+            ShortageStorage();
+            FailDownloadMap("地図2");
         });
 
         // 地図3追加ボタン押された時
         ImageButton btnAddMap3 = findViewById(R.id.btnAddMap3);
         btnAddMap3.setOnClickListener(v -> {
-            showDownLoadChecking("地図3");
+            // 処理内容を追加
         });
 
     }
@@ -101,7 +107,7 @@ public class MapSettingActivity extends AppCompatActivity {
     private void showByteChecking(int mapByte){
         new AlertDialog.Builder(this)
                 .setTitle("データサイズ確認")
-                .setMessage("ダウンロードする地図は、" + mapByte + "です。\n" +
+                .setMessage("ダウンロードする地図は、" + mapByte + "byteです。\n\n" +
                             "この地図をダウンロードしますか？")
                 .setPositiveButton("はい", (dialog, which) -> {
                     // インターネットの確認、空き容量の確認、地図のダウンロード開始
@@ -133,6 +139,44 @@ public class MapSettingActivity extends AppCompatActivity {
                 .show();
     }
 
+    // エラー文1(インターネットに接続されてないケース)
+    private void NotConnectedInternet(String mapName){
+        new AlertDialog.Builder(this)
+                .setTitle("エラー")
+                .setMessage("インターネットに接続されていないため、" + mapName + "をダウンロードできません。\n\n" +
+                            "インターネットの接続状況を確認してください。")
+                .setIcon(R.drawable.baseline_error_24)
+                .setPositiveButton("確認", (dialog, which) -> {
+                    // 何もしない
+                })
+                .show();
+    }
+
+    // エラー文2(空き容量が足りていないケース)
+    private void ShortageStorage(){
+        new AlertDialog.Builder(this)
+                .setTitle("エラー")
+                .setMessage("端末に空き容量が不足しています。\n\n" +
+                            "空き容量を確保してください。")
+                .setIcon(R.drawable.baseline_error_24)
+                .setPositiveButton("確認", (dialog, which) -> {
+                    // 何もしない
+                })
+                .show();
+    }
+
+    // エラー文3(地図のダウンロードに失敗したケース)
+    private void FailDownloadMap(String mapName){
+        new AlertDialog.Builder(this)
+                .setTitle("エラー")
+                .setMessage(mapName + "のダウンロードに失敗しました。\n\n" +
+                        "もう一度地図をダウンロードしてください。")
+                .setIcon(R.drawable.baseline_error_24)
+                .setPositiveButton("確認", (dialog, which) -> {
+                    // 何もしない
+                })
+                .show();
+    }
 
 
 }
