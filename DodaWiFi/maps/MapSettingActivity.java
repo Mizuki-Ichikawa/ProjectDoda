@@ -3,18 +3,39 @@ package com.example.ddwifi4;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.view.MotionEvent;
 import android.widget.ImageButton;
 import android.content.Intent;
 import android.view.View;
 
 import android.app.AlertDialog;
 
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.util.BoundingBox;
+import org.osmdroid.views.overlay.Polygon;
+import android.graphics.Color;
+import java.util.ArrayList;
+import java.util.List;
+import android.widget.Toast;
+
+
 public class MapSettingActivity extends AppCompatActivity {
+    private MapView mapView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mapsetting);
+
+        // MapViewの初期化
+        mapView = findViewById(R.id.mapView);
+        if(mapView != null){
+            mapView.setBuiltInZoomControls(true);
+            mapView.setMultiTouchControls(true);
+        }else{
+            throw new IllegalStateException("MapViewが正しく初期化されていません");
+        }
 
         // 掲示板ページに戻るメソッド
         ImageButton btnReturnToBoard = findViewById(R.id.btnReturnToBoard);
@@ -22,8 +43,8 @@ public class MapSettingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MapSettingActivity.this, Database.class);
-                startActivity(intent);
-                finish();
+                //startActivity(intent);
+                //finish();
             }
         });
 
@@ -76,6 +97,9 @@ public class MapSettingActivity extends AppCompatActivity {
         ImageButton btnAddMap3 = findViewById(R.id.btnAddMap3);
         btnAddMap3.setOnClickListener(v -> {
             // 処理内容を追加
+            showDownLoadChecking("地図3", () -> {
+
+            });
         });
 
     }
@@ -86,7 +110,8 @@ public class MapSettingActivity extends AppCompatActivity {
                 .setTitle("ダウンロード確認")
                 .setMessage(mapName + "をダウンロードしますか？")
                 .setPositiveButton("はい", (dialog, which) -> {
-                    // ダウンロード範囲の選択
+                    // ダウンロード選択ページへの遷移
+                    moveToRangeSelection(mapName);
                     if(onConfirmed != null) onConfirmed.run();
                 })
                 .setNegativeButton("いいえ", (dialog, which) -> {
@@ -94,6 +119,14 @@ public class MapSettingActivity extends AppCompatActivity {
                 })
                 .show();
     }
+
+    // 範囲選択ページへの遷移
+    private void moveToRangeSelection(String mapName) {
+        Intent intent = new Intent(MapSettingActivity.this, SelectRange.class);
+        intent.putExtra("mapName", mapName); // 地図名を次のページに渡す
+        startActivity(intent);
+    }
+
 
     // 地図の上書き確認UI
     private void showOverwrapChecking(String mapName, Runnable onConfirmed){

@@ -59,6 +59,11 @@
             android:name=".MapSettingActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".SelectRange"
+            android:exported="false" />
+
+
     </application>
 
 </manifest>

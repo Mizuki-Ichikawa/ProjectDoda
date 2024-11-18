@@ -1,0 +1,51 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    tools:context=".SelectRange">
+
+    <!-- メッセージ上部 -->
+    <TextView
+        android:id="@+id/top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="#EDE7F6"
+        android:gravity="center"
+        android:padding="16dp"
+        android:text="ダウンロード範囲を指定してください。"
+        android:textSize="16sp" />
+
+    <!-- 地図 (MapView) -->
+    <org.osmdroid.views.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/footer"
+        android:layout_below="@id/top"
+        android:visibility="visible" />
+
+    <!-- メッセージ下部 -->
+    <TextView
+        android:id="@+id/footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="16sp"
+        android:gravity="center"
+        android:padding="16dp"
+        android:background="#EDE7F6"
+        android:layout_alignParentBottom="true" />
+
+    <!-- 完了ボタン -->
+    <Button
+        android:id="@+id/btnDone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="1dp"
+        android:text="完了" />
+
+</RelativeLayout>
