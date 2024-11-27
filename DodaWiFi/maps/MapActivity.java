@@ -2,8 +2,11 @@ package com.example.ddwifi4;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,23 +17,32 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 
 import org.osmdroid.config.Configuration;
+import org.osmdroid.mapsforge.BuildConfig;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 
+import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import android.widget.ImageButton;
 
 
 public class MapActivity extends AppCompatActivity {
-
+    private static final int PERMISSIONS_REQUEST_CODE = 100;
+    private static final String[] REQUIRED_PERMISSIONS = new String[]{
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.INTERNET
+    };
     private MapView mapView;
-    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
     private DatabaseHelper dbHelper;
     private LocationManager locationManager;
 
@@ -40,35 +52,18 @@ public class MapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        // OSMDroidの設定
-        Configuration.getInstance().setUserAgentValue(getApplicationContext().getPackageName());
+        // 権限をリクエスト
+        requestPermissionsIfNeeded();
 
+        // OSMDroidのキャッシュディレクトリを指定
+        Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
+        File osmdroidBasePath = new File(getFilesDir(), "osmdroid");
+        Configuration.getInstance().setOsmdroidBasePath(osmdroidBasePath);
+        Configuration.getInstance().setOsmdroidTileCache(new File(osmdroidBasePath, "cache"));
 
-        // MapViewの初期化
-        mapView = findViewById(R.id.mapView);
-        mapView.setBuiltInZoomControls(true);
-        mapView.setMultiTouchControls(true);
-
-        // 権限のリクエスト
-        requestPermissionsIfNecessary(new String[]{
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-        });
-
-        // 地図の初期位置を設定
-        mapView.getController().setZoom(15.0);
-        mapView.getController().setCenter(new org.osmdroid.util.GeoPoint(35.6895, 139.6917)); // 東京の座標（例）
         dbHelper = new DatabaseHelper(this);
 
-        // ピンを立てる例
-        Marker marker = new Marker(mapView);
-        marker.setPosition(new org.osmdroid.util.GeoPoint(35.6895, 139.6917)); // 東京の座標（例）
-        marker.setTitle("Tokyo");
-        marker.setSubDescription("This is Tokyo.");
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-        mapView.getOverlays().add(marker);
-
-        // 戻るボタンの設定
+        // 掲示板ページに戻る
         ImageButton btnReturnToBoard = findViewById(R.id.btnReturnToBoard);
         btnReturnToBoard.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,7 +75,7 @@ public class MapActivity extends AppCompatActivity {
             }
         });
 
-        // 地図設定ボタンの設定
+        // 地図設定ボタンに遷移
         ImageButton btnMoveToSetting = findViewById(R.id.btnMoveToSetting);
         btnMoveToSetting.setOnClickListener(new View.OnClickListener(){;
             @Override
@@ -98,22 +93,92 @@ public class MapActivity extends AppCompatActivity {
         // 📍
         getData();
     }
-
-    private void requestPermissionsIfNecessary(String[] permissions) {
-        for (String permission : permissions) {
+    // 権限に関するプログラム
+    // 権限のリクエストをするメソッド
+    private void requestPermissionsIfNeeded() {
+        // 必要な権限が付与されていない場合にリクエスト
+        List<String> missingPermissions = new ArrayList<>();
+        for (String permission : REQUIRED_PERMISSIONS) {
             if (ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, permissions, REQUEST_PERMISSIONS_REQUEST_CODE);
-                return;
+                missingPermissions.add(permission);
+            }
+        }
+        // 権限が不足している場合のみリクエストを実行
+        if (!missingPermissions.isEmpty()) {
+            ActivityCompat.requestPermissions(this,
+                    missingPermissions.toArray(new String[0]),
+                    PERMISSIONS_REQUEST_CODE);
+        } else {
+            onPermissionsGranted();
+        }
+    }
+    // ユーザーが権限を拒否した場合の処理
+    private void showPermissionRationale() {
+        new AlertDialog.Builder(this)
+                .setTitle("権限が必要です")
+                .setMessage("地図データを利用するためには、位置情報とストレージの権限が必要です。設定から権限を付与してください。")
+                .setPositiveButton("設定に移動", (dialog, which) -> {
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.fromParts("package", getPackageName(), null));
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                })
+                .setNegativeButton("キャンセル", null)
+                .show();
+    }
+
+    private void onPermissionsGranted() {
+        // 権限が付与された後の処理を記述
+        initializeMap();
+    }
+    // リクエスト結果確認
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == PERMISSIONS_REQUEST_CODE) {
+            boolean allGranted = true;
+            for (int result : grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    allGranted = false;
+                    break;
+                }
+            }
+
+            if (allGranted) {
+                Toast.makeText(this, "すべての必要な権限が付与されました", Toast.LENGTH_SHORT).show();
+                onPermissionsGranted();
+            } else {
+                Toast.makeText(this, "必要な権限が付与されていません", Toast.LENGTH_SHORT).show();
+                showPermissionRationale();
             }
         }
     }
 
+
+    // 地図情報の初期化
+    private void initializeMap() {
+        // OSMDroidの設定
+        Configuration.getInstance().setUserAgentValue(getApplicationContext().getPackageName());
+
+        // MapViewの初期化
+        mapView = findViewById(R.id.mapView);
+        mapView.setBuiltInZoomControls(true); // ズームコントロールを有効化
+        mapView.setMultiTouchControls(true); // マルチタッチ操作を有効化
+
+        // 地図の初期位置を設定 (東京の例)
+        GeoPoint initialPoint = new GeoPoint(35.6895, 139.6917); // 緯度経度
+        mapView.getController().setCenter(initialPoint); // 地図の中心を設定
+        mapView.getController().setZoom(15.0); // 初期ズームレベルを設定
+    }
+
+    // データベース関連
     private void requestCurrentLocation() {
         // 権限が付与されているか確認
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // 必要な場合は権限をリクエスト
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSIONS_REQUEST_CODE);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_CODE );
             return;
         }
 
@@ -159,25 +224,7 @@ public class MapActivity extends AppCompatActivity {
         mapView.invalidate();
     }
 
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
-            boolean permissionsGranted = true;
-            for (int result : grantResults) {
-                if (result != PackageManager.PERMISSION_GRANTED) {
-                    permissionsGranted = false;
-                    break;
-                }
-            }
-            if (!permissionsGranted) {
-                Toast.makeText(this, "必要な権限が付与されていません", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
+    // 情報の価値の重み付けメソッド
     private void getData() {
         // データベースから投稿を取得
         List<Post> posts = dbHelper.getAllPosts();
@@ -217,17 +264,15 @@ public class MapActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         mapView.getOverlays().clear(); // 既存のオーバーレイをクリア
         getData(); // 最新のデータでマーカーを再描画
         mapView.invalidate(); // 再描画
     }
-
-
 
     @Override
     protected void onPause() {
         super.onPause();
         mapView.onPause(); // OSMDroidのライフサイクル管理
     }
+
 }

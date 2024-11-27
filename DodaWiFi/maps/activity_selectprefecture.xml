@@ -15,17 +15,26 @@
         android:background="#EDE7F6"
         android:gravity="center"
         android:padding="16dp"
-        android:text="ダウンロード範囲を指定してください。"
+        android:text="ダウンロードしたい県を選んでください"
         android:textSize="16sp" />
 
-    <!-- 地図 (MapView) -->
-    <org.osmdroid.views.MapView
-        android:id="@+id/mapView"
+    <!--　県名　-->
+    <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/footer"
-        android:layout_below="@id/top"
-        android:visibility="visible" />
+        android:layout_marginTop="200dp"
+        android:isScrollContainer="false">
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        </LinearLayout>
+
+    </ScrollView>
+
 
     <!-- メッセージ下部 -->
     <TextView

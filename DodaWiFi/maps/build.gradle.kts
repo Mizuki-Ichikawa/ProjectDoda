@@ -45,6 +45,9 @@ dependencies {
 
     implementation ("com.google.android.gms:play-services-location:21.0.1")
     // OSMDroidライブラリのアップロード
-    implementation("org.osmdroid:osmdroid-android:6.1.10")
+    //implementation("org.osmdroid:osmdroid-android:6.1.10")
+    implementation("org.osmdroid:osmdroid-android:6.1.14") // 最新バージョンを使用
+    //implementation("org.osmdroid:osmdroid-mbtiles:6.1.12") // 対応していないから撤去
+    implementation("org.osmdroid:osmdroid-mapsforge:6.1.10")
 
 }

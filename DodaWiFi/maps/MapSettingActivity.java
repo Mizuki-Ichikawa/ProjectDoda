@@ -1,8 +1,14 @@
 package com.example.ddwifi4;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.StatFs;
 import android.view.MotionEvent;
 import android.widget.ImageButton;
 import android.content.Intent;
@@ -10,11 +16,18 @@ import android.view.View;
 
 import android.app.AlertDialog;
 
+import org.osmdroid.tileprovider.MapTileProviderBasic;
+import org.osmdroid.tileprovider.modules.TileDownloader;
+import org.osmdroid.tileprovider.modules.TileWriter;
+import org.osmdroid.util.TileSystem;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.views.overlay.Polygon;
 import android.graphics.Color;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import android.widget.Toast;
@@ -74,11 +87,6 @@ public class MapSettingActivity extends AppCompatActivity {
         ImageButton btnAddMap1 = findViewById(R.id.btnAddMap1);
         btnAddMap1.setOnClickListener(v -> {
             showDownLoadChecking("地図1", () -> {
-                showByteChecking(500, () -> {
-                    showOverwrapChecking("地図1", () -> {
-                        showFinishAddMap("地図1", null);
-                    });
-                });
             });
 
         });
@@ -86,11 +94,7 @@ public class MapSettingActivity extends AppCompatActivity {
         // 地図2追加ボタン押された時
         ImageButton btnAddMap2 = findViewById(R.id.btnAddMap2);
         btnAddMap2.setOnClickListener(v -> {
-            NotConnectedInternet("map1", () ->{
-                ShortageStorage(() ->{
-                    FailDownloadMap("map1", null);
-                });
-            });
+
         });
 
         // 地図3追加ボタン押された時
@@ -98,7 +102,6 @@ public class MapSettingActivity extends AppCompatActivity {
         btnAddMap3.setOnClickListener(v -> {
             // 処理内容を追加
             showDownLoadChecking("地図3", () -> {
-
             });
         });
 
@@ -122,11 +125,10 @@ public class MapSettingActivity extends AppCompatActivity {
 
     // 範囲選択ページへの遷移
     private void moveToRangeSelection(String mapName) {
-        Intent intent = new Intent(MapSettingActivity.this, SelectRange.class);
+        Intent intent = new Intent(MapSettingActivity.this, SelectPrefecture.class);
         intent.putExtra("mapName", mapName); // 地図名を次のページに渡す
         startActivity(intent);
     }
-
 
     // 地図の上書き確認UI
     private void showOverwrapChecking(String mapName, Runnable onConfirmed){
@@ -143,32 +145,16 @@ public class MapSettingActivity extends AppCompatActivity {
                 .show();
     }
 
-    // バイト数の確認UI
-    private void showByteChecking(int mapByte, Runnable onConfirmed){
-        new AlertDialog.Builder(this)
-                .setTitle("データサイズ確認")
-                .setMessage("ダウンロードする地図は、" + mapByte + "byteです。\n\n" +
-                            "この地図をダウンロードしますか？")
-                .setPositiveButton("はい", (dialog, which) -> {
-                    // インターネットの確認、空き容量の確認、地図のダウンロード開始
-                    if(onConfirmed != null) onConfirmed.run();
-                })
-                .setNegativeButton("いいえ", (dialog, which) -> {
-                    showStoppingAction(null);
-                })
-                .show();
-    }
-
-    // 追加完了UI
-    private void showFinishAddMap(String mapName, Runnable onConfirmed){
-        new AlertDialog.Builder(this)
-                .setTitle("ダウンロード完了")
-                .setMessage(mapName + "のダウンロードが完了しました。")
-                .setPositiveButton("確認", (dialog, which) -> {
-                    // 何もしない
-                    if(onConfirmed != null) onConfirmed.run();
-                })
-                .show();
+   // 追加完了UI
+        private void showFinishAddMap(String mapName, Runnable onConfirmed){
+            new AlertDialog.Builder(this)
+                    .setTitle("ダウンロード完了")
+                    .setMessage(mapName + "のダウンロードが完了しました。")
+                    .setPositiveButton("確認", (dialog, which) -> {
+                        // 何もしない
+                        if(onConfirmed != null) onConfirmed.run();
+                    })
+                    .show();
     }
 
     private void showStoppingAction(Runnable onConfirmed){
@@ -181,48 +167,4 @@ public class MapSettingActivity extends AppCompatActivity {
                 })
                 .show();
     }
-
-    // エラー文1(インターネットに接続されてないケース)
-    private void NotConnectedInternet(String mapName, Runnable onRetry){
-        new AlertDialog.Builder(this)
-                .setTitle("エラー")
-                .setMessage("インターネットに接続されていないため、" + mapName + "をダウンロードできません。\n\n" +
-                            "インターネットの接続状況を確認してください。")
-                .setIcon(R.drawable.baseline_error_24)
-                .setPositiveButton("確認", (dialog, which) -> {
-                    // 何もしない
-                    if(onRetry != null) onRetry.run();
-                })
-                .show();
-    }
-
-    // エラー文2(空き容量が足りていないケース)
-    private void ShortageStorage(Runnable onRetry){
-        new AlertDialog.Builder(this)
-                .setTitle("エラー")
-                .setMessage("端末に空き容量が不足しています。\n\n" +
-                            "空き容量を確保してください。")
-                .setIcon(R.drawable.baseline_error_24)
-                .setPositiveButton("確認", (dialog, which) -> {
-                    // 何もしない
-                    if(onRetry != null) onRetry.run();
-                })
-                .show();
-    }
-
-    // エラー文3(地図のダウンロードに失敗したケース)
-    private void FailDownloadMap(String mapName, Runnable onRetry){
-        new AlertDialog.Builder(this)
-                .setTitle("エラー")
-                .setMessage(mapName + "のダウンロードに失敗しました。\n\n" +
-                        "もう一度地図をダウンロードしてください。")
-                .setIcon(R.drawable.baseline_error_24)
-                .setPositiveButton("確認", (dialog, which) -> {
-                    // 何もしない
-                    if(onRetry != null) onRetry.run();
-                })
-                .show();
-    }
-
-
 }
